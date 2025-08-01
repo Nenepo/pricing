@@ -55,7 +55,7 @@ const pricingInfo = {
       { text: "Framer template customization", icon: LayoutTemplate },
     ],
   },
-  "good+fast": {
+  "fast+good": {
     label: "Good & Fast",
     price: "€3,500",
     urgency: "Best Value",
@@ -72,22 +72,34 @@ const pricingInfo = {
 function App() {
   const [selected, setSelected] = useState(["good", "cheap"]);
 
- const toggleOption = (id) => {
-  setSelected((prev) => {
-    if (prev.includes(id)) {
-      // Find the one that isn't selected
-      const unselected = optionsData
-        .map((opt) => opt.id)
-        .find((optId) => !prev.includes(optId));
+  const toggleOption = (id) => {
+    setSelected((prev) => {
+      const isSelected = prev.includes(id);
 
-      return [id, unselected];
-    } else if (prev.length < 2) {
-      return [...prev, id];
-    }
-    return prev;
-  });
-};
+      // Case 1: Clicking a selected option (swap with unselected)
+      if (isSelected) {
+        // Find which option is NOT selected (the one to swap with)
+        const unselectedId = optionsData.find(
+          (option) => !prev.includes(option.id)
+        )?.id;
 
+        // Swap them (deselect current, select the unselected one)
+        return prev
+          .filter((item) => item !== id)
+          .concat(unselectedId ? [unselectedId] : []);
+      }
+
+      // Case 2: Clicking an unselected option (replace oldest selected)
+      else {
+        // With exactly 2 selected, replace the oldest
+        if (prev.length >= 2) {
+          return [prev[1], id]; // Keep newest, add clicked
+        }
+        // With <2 selected, just add it
+        return [...prev, id];
+      }
+    });
+  };
 
   const key = selected.sort().join("+");
   const current = pricingInfo[key];
@@ -100,11 +112,11 @@ function App() {
 
       <h1 className="text-4xl font-semibold mt-4 ">
         Good, fast, cheap.
-        <span className="italic font-normal"> Pick two</span>
+        <span className=" font-normal libre"> Pick two</span>
       </h1>
       <p className=" text-base  text-gray-500 mt-2">
         Landing page pricing to fit{" "}
-        <span className="font-normal text-orange-600 italic">your</span> needs
+        <span className="font-normal text-orange-600 libre">your</span> needs
         and priorities
       </p>
 
@@ -168,52 +180,59 @@ function App() {
         {/* Pricing Card */}
         <div className="shadow shadow-gray-300 w-[300px]  rounded-xl ">
           {current && (
-            <div className="bg-white p-4 flex flex-col gap-3 ">
-              <div className="flex justify-between items-center">
-                <p className="text-xl font-normal italic">{current.label}</p>
+            <div className="bg-white p-4 flex flex-col gap-4 ">
+              <div className="flex justify-between items-center ">
+                <p className="text-xl font-normal libre">{current.label}</p>
                 <p
                   className={`text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-700/15 text-orange-600`}
                 >
                   {current.urgency}
                 </p>
               </div>
-              <p className="text-4xl font-bold">{current.price}</p>
-              <ul className="text-gray-800 gap-2 flex flex-col text-xs">
+              <p className="text-4xl font-bold ">{current.price}</p>
+              <ul className="text-gray-800 gap-2 flex flex-col text-xs ">
                 <li className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-orange-600" />
                   {current.time}
                 </li>
                 {current.features.map((feat, idx) => {
-const isStrikethrough = feat.text.trimStart().startsWith("~");
+                  const isStrikethrough = feat.text.trimStart().startsWith("~");
                   const Icon = feat.icon;
                   return (
                     <li
                       key={idx}
                       className={`flex items-center gap-2 ${
-                        isStrikethrough
-                          ? "line-through text-gray-400"
-                          : ""
+                        isStrikethrough ? "line-through text-gray-400" : ""
                       }`}
                     >
-                      <Icon className={`w-4 h-4  ${
-                        isStrikethrough
-                          ? "line-through text-gray-400"
-                          : "text-orange-600"
-                      }`} />
+                      <Icon
+                        className={`w-4 h-4  ${
+                          isStrikethrough
+                            ? "line-through text-gray-400"
+                            : "text-orange-600"
+                        }`}
+                      />
                       {feat.text.replace("~", "")}
                     </li>
                   );
                 })}
               </ul>
+              <div className="flex flex-col gap-2">
+               <button
+  className="w-full bg-orange-600 text-white py-2 rounded-2xl font-medium text-xs
+             hover:opacity-90 hover:translate-y-[1px] active:translate-y-[2px]
+             transition-all duration-200 ease-in-out
+             shadow-[0_1px_1px_0_#c2410c] active:shadow-[0_2px_0_0_#c2410c]"
+>
+  Book a call
+</button>
 
-              <button className="w-full bg-black text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
-                Book a call
-              </button>
-              <p className="text-center text-xs text-gray-500">
-                No payment required. Zero commitment.
-              </p>
+                <p className="text-center text-xs text-gray-500">
+                  No payment required. Zero commitment.
+                </p>
+              </div>
             </div>
-        )} 
+          )}
         </div>
       </div>
     </div>
