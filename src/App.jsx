@@ -120,8 +120,8 @@ function App() {
         and priorities
       </p>
 
-      <div className=" mx-auto flex  gap-6  mt-6 h-full  w-[100%] lg:w-[800px]">
-        <div className="flex flex-col md:flex-row mx-auto">
+      <div className=" mx-auto flex   mt-6 h-full  w-[100%] lg:w-[800px]">
+        <div className="flex flex-col md:flex-row mx-auto gap-6 ">
           {/* Options */}
           <div className="flex flex-col justify-center">
             <h2 className="text-base font-semibold leading-4">
